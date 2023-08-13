@@ -21,7 +21,7 @@ jobs:
       run: echo build dokcer images!
 
   build-config-server:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-config-server
       tag:  3.0.2
@@ -31,7 +31,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   build-discovery-server:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-discovery-server
       tag:  3.0.2
@@ -41,7 +41,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
    
   build-api-gateway:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-api-gateway
       tag:  3.0.2
@@ -52,7 +52,7 @@ jobs:
     
   
   build-admin-server:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-admin-server
       tag:  3.0.2
@@ -62,7 +62,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   build-customers-service:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-customers-service
       tag:  3.0.2
@@ -73,7 +73,7 @@ jobs:
 
 
   build-vets-service:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-vets-service
       tag:  3.0.2
@@ -83,7 +83,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   build-visits-service:
-    uses: inesHRM/Project_Petclinic_1/.github/workflows/build-docker-image.yml@main
+    uses: kevanto/Aspring-petclinic-microservices/.github/workflows/build-docker-image.yml@main
     with:
       image_name: spring-petclinic-visits-service
       tag:  3.0.2
