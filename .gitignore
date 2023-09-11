@@ -19,3 +19,9 @@ target/
 
 # Branch switching
 generated/
+
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+terraform.lock.hcl
+*.tfvars
