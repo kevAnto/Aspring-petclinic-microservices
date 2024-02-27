@@ -1,0 +1,5 @@
+#Les namespaces sont des espaces logiques, des sous-clusters virtuels qui permettent d'organiser les différents objets que l'on retrouve dans Kubernetes. 
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spring-petclinic

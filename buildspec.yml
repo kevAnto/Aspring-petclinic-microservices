@@ -1,0 +1,60 @@
+version: 0.2
+
+phases:
+  install:
+    java: 11
+    commands:
+      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.4/2023-08-16/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+      - echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+      - kubectl version --short --client
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - REPOSITORY_URI=484497069811.dkr.ecr.eu-west-3.amazonaws.com
+      - AWS_REGION=eu-west-3
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo "Build Test with maven"
+  build:
+    on-failure: ABORT
+    commands:
+      - echo "Build all docker image"
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - mvn spring-boot:build-image -Pk8s -DREPOSITORY_PREFIX=$REPOSITORY_URI
+     
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-api-gateway:latest $REPOSITORY_URI/spring-petclinic-cloud-api-gateway:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-visits-service:latest $REPOSITORY_URI/spring-petclinic-cloud-visits-service:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-vets-service:latest $REPOSITORY_URI/spring-petclinic-cloud-vets-service:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-customers-service:latest $REPOSITORY_URI/spring-petclinic-cloud-customers-service:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-admin-server:latest $REPOSITORY_URI/spring-petclinic-cloud-admin-server:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-discovery-service:latest $REPOSITORY_URI/spring-petclinic-cloud-discovery-service:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI/spring-petclinic-cloud-config-server:latest $REPOSITORY_URI/spring-petclinic-cloud-config-server:$IMAGE_TAG
+
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-api-gateway:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-api-gateway:$IMAGE_TAG
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-visits-service:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-visits-service:$IMAGE_TAG
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-vets-service:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-vets-service:$IMAGE_TAG
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-customers-service:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-customers-service:$IMAGE_TAG      
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-admin-server:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-admin-server:$IMAGE_TAG
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-discovery-service:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-discovery-service:$IMAGE_TAG
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-config-server:latest
+      - docker push $REPOSITORY_URI/spring-petclinic-cloud-config-server:$IMAGE_TAG
+      - echo Build completed on `date`
+  post_build:
+    commands:
+      - echo Update kube configg
+      - sh kubernetes/eks_update.sh
+
+

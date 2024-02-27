@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: visits-service
+  name: visits-service
+  namespace: spring-petclinic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: visits-service
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: visits-service
+    spec:
+      containers:
+      - image: 484497069811.dkr.ecr.eu-west-3.amazonaws.com/spring-petclinic-cloud-visits-service:latest
+        name: visits-service
+        imagePullPolicy: Always
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: kubernetes
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://visit-db.chte3d0ognif.eu-west-3.rds.amazonaws.com:3306
+        - name: SPRING_DATASOURCE_USERNAME
+          value: datascientest
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: datascientest
+        #- name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
+        #  value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+status: {}
+---
+#Le service ClusterIP est le type par défaut au sein de Kubernetes
+#Il reçoit une adresse IP interne au cluster, ce qui rend ses Pods uniquement accessibles depuis le cluster
+#Ce service doit juste est accessible par l'API
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: visits-service
+  name: visits-service
+  namespace: spring-petclinic  
+spec:
+  type: ClusterIP
+  ports:
+  - name: "http"
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: visits-service

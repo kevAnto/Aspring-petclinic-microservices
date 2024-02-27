@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: #Metadata du deployement
+  labels:
+    app: api-gateway
+  name: api-gateway
+  namespace: spring-petclinic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  strategy: {}
+  template: #metadata spécifique au pod
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - image: 484497069811.dkr.ecr.eu-west-3.amazonaws.com/spring-petclinic-cloud-api-gateway:latest
+        name: api-gateway
+        imagePullPolicy: Always
+        env: #variables d'environeement
+        - name: SPRING_PROFILES_ACTIVE
+          value: kubernetes
+        #- name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
+        #  value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
+        ports:
+        - containerPort: 8080 
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: api-gateway
+  name: api-gateway
+  namespace: spring-petclinic
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: api-gateway
+
